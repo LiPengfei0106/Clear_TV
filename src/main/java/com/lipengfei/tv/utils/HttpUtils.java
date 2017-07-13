@@ -2,6 +2,7 @@ package com.lipengfei.tv.utils;
 
 import android.util.SparseArray;
 
+import com.lipengfei.tv.bean.Channel;
 import com.lipengfei.tv.bean.Movie;
 import com.lipengfei.tv.bean.MovieCategoryList;
 import com.lipengfei.tv.bean.MovieTag;
@@ -12,8 +13,13 @@ import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.builder.PostFormBuilder;
 import com.zhy.http.okhttp.callback.Callback;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import okhttp3.Response;
@@ -99,10 +105,18 @@ public class HttpUtils {
 
     public abstract static class LiveListCallBack extends Callback {
 
-        public SparseArray<MovieCategoryList> parseNetworkResponse(Response response, int id) throws IOException {
-            SparseArray<MovieCategoryList> categorys = new SparseArray<>();
-
-            return categorys;
+        public LinkedList<Channel> parseNetworkResponse(Response response, int id) throws IOException {
+            LinkedList<Channel> channelList = new LinkedList<>();
+            try {
+                JSONObject object = new JSONObject(response.body().string());
+                JSONArray array = object.getJSONArray("ChannelList");
+                for(int i = 0;i<array.length();i++){
+                    channelList.add(JsonUtils.getBeanFromJson(array.get(i).toString(),Channel.class));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return channelList;
         }
     }
 

@@ -22,7 +22,10 @@ import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
 import com.lipengfei.tv.R;
+import com.lipengfei.tv.bean.Channel;
 import com.lipengfei.tv.bean.Movie;
+import com.lipengfei.tv.global.Constants;
+import com.lipengfei.tv.global.Variables;
 
 /*
  * A CardPresenter is used to generate Views and bind Objects to them on demand.
@@ -80,6 +83,21 @@ public class CardPresenter extends Presenter {
                 cardView.setMainImageDimensions(CARD_WIDTH, CARD_HEIGHT);
                 Glide.with(viewHolder.view.getContext())
                         .load(movie.getCardImageUrl())
+                        .centerCrop()
+                        .error(mDefaultCardImage)
+                        .into(cardView.getMainImageView());
+            }
+        }else if(item instanceof Channel){
+            Channel channel = (Channel) item;
+            ImageCardView cardView = (ImageCardView) viewHolder.view;
+
+            Log.d(TAG, "onBindViewHolder");
+            if (channel.getChannelPicURL() != null) {
+                cardView.setTitleText(channel.getChannelName().get(Variables.language_code));
+//                cardView.setContentText(movie.getStudio());
+                cardView.setMainImageDimensions(CARD_WIDTH, CARD_HEIGHT);
+                Glide.with(viewHolder.view.getContext())
+                        .load(Variables.host+channel.getChannelPicURLRelatvie())
                         .centerCrop()
                         .error(mDefaultCardImage)
                         .into(cardView.getMainImageView());

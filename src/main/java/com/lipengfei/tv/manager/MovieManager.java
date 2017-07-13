@@ -2,6 +2,7 @@ package com.lipengfei.tv.manager;
 
 import android.util.SparseArray;
 
+import com.lipengfei.tv.bean.Channel;
 import com.lipengfei.tv.bean.Movie;
 import com.lipengfei.tv.bean.MovieCategoryList;
 import com.lipengfei.tv.global.Variables;
@@ -21,15 +22,20 @@ import okhttp3.Call;
 public class MovieManager {
 
     public static SparseArray<MovieCategoryList> movieLists;
-    public static LinkedHashSet<Movie> relatedMovies = new LinkedHashSet<>();
+    public static LinkedList<Channel> channelList = new LinkedList<>();
     public static ArrayList<Movie> allMovies = new ArrayList<>();
 
-    public interface CacheListener{
+    public interface CacheMovieListener{
         void onSuccess(SparseArray<MovieCategoryList> movieLists);
         void onFailed(String msg);
     }
 
-    public static void cacheMovie(final CacheListener listener){
+    public interface CacheChannelListener{
+        void onSuccess(LinkedList<Channel> channels);
+        void onFailed(String msg);
+    }
+
+    public static void cacheMovie(final CacheMovieListener listener){
         HttpUtils.get(Variables.movieUrl,new HttpUtils.MovieListCallBack(){
 
             @Override
@@ -49,7 +55,7 @@ public class MovieManager {
         });
     }
 
-    public static void cacheLive(final CacheListener listener){
+    public static void cacheLive(final CacheChannelListener listener){
         HttpUtils.get(Variables.liveUrl,new HttpUtils.LiveListCallBack(){
 
             @Override
@@ -60,9 +66,9 @@ public class MovieManager {
             @Override
             public void onResponse(Object o, int i) {
 
-                if(o instanceof SparseArray){
-                    movieLists = (SparseArray<MovieCategoryList>) o;
-                    listener.onSuccess(movieLists);
+                if(o instanceof LinkedList){
+                    channelList = (LinkedList<Channel>) o;
+                    listener.onSuccess(channelList);
                 }
 
             }

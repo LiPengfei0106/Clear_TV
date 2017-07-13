@@ -42,6 +42,7 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.lipengfei.tv.R;
+import com.lipengfei.tv.bean.Channel;
 import com.lipengfei.tv.bean.Movie;
 import com.lipengfei.tv.bean.MovieCategoryList;
 import com.lipengfei.tv.global.Variables;
@@ -50,10 +51,12 @@ import com.lipengfei.tv.presenter.CardPresenter;
 import com.lipengfei.tv.presenter.GridItemPresenter;
 import com.lipengfei.tv.ui.activity.BrowseErrorActivity;
 import com.lipengfei.tv.ui.activity.DetailsActivity;
+import com.lipengfei.tv.ui.activity.PlayerActivity;
 import com.lipengfei.tv.ui.activity.SearchActivity;
 import com.lipengfei.tv.ui.activity.SettingActivity;
 
 import java.net.URI;
+import java.util.LinkedList;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -95,11 +98,27 @@ public class MainFragment extends BrowseFragment {
     }
 
     private void loadRows() {
+        mRowsAdapter = new ArrayObjectAdapter(new ListRowPresenter());
+        MovieManager.cacheLive(new MovieManager.CacheChannelListener() {
+            @Override
+            public void onSuccess(LinkedList<Channel> channels) {
+                ArrayObjectAdapter listRowAdapter = new ArrayObjectAdapter(new CardPresenter());
+                for(Channel channel : channels){
+                    listRowAdapter.add(channel);
+                }
+                HeaderItem header = new HeaderItem(100, "Live");
+                mRowsAdapter.add(new ListRow(header, listRowAdapter));
+            }
 
-        MovieManager.cacheMovie(new MovieManager.CacheListener() {
+            @Override
+            public void onFailed(String msg) {
+
+            }
+        });
+
+        MovieManager.cacheMovie(new MovieManager.CacheMovieListener() {
             @Override
             public void onSuccess(SparseArray<MovieCategoryList> movieLists) {
-                mRowsAdapter = new ArrayObjectAdapter(new ListRowPresenter());
                 CardPresenter cardPresenter = new CardPresenter();
                 for(int i = 0;i<movieLists.size();i++){
                     int key =  movieLists.keyAt(i);
@@ -221,6 +240,12 @@ public class MainFragment extends BrowseFragment {
                     Toast.makeText(getActivity(), ((String) item), Toast.LENGTH_SHORT)
                             .show();
                 }
+            }else if(item instanceof Channel){
+                Channel channel = (Channel) item;
+                Intent intent = new Intent(getActivity(), PlayerActivity.class);
+                intent.putExtra("position",MovieManager.channelList.indexOf(channel));
+                startActivity(intent);
+                Log.d(TAG, "Item: " + item.toString());
             }
         }
     }
