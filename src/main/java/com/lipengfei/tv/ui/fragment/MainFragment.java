@@ -48,7 +48,6 @@ import com.lipengfei.tv.bean.MovieCategoryList;
 import com.lipengfei.tv.global.Variables;
 import com.lipengfei.tv.manager.MovieManager;
 import com.lipengfei.tv.presenter.CardPresenter;
-import com.lipengfei.tv.presenter.GridItemPresenter;
 import com.lipengfei.tv.ui.activity.BrowseErrorActivity;
 import com.lipengfei.tv.ui.activity.DetailsActivity;
 import com.lipengfei.tv.ui.activity.PlayerActivity;
@@ -59,6 +58,8 @@ import java.net.URI;
 import java.util.LinkedList;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import jp.wasabeef.glide.transformations.BlurTransformation;
 
 public class MainFragment extends BrowseFragment {
     private static final String TAG = "MainFragment";
@@ -86,6 +87,12 @@ public class MainFragment extends BrowseFragment {
         loadRows();
 
         setupEventListeners();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        startBackgroundTimer();
     }
 
     @Override
@@ -193,6 +200,7 @@ public class MainFragment extends BrowseFragment {
                 .load(uri)
                 .centerCrop()
                 .error(mDefaultBackground)
+                .bitmapTransform(new BlurTransformation(getActivity(),23,4))
                 .into(new SimpleTarget<GlideDrawable>(width, height) {
                     @Override
                     public void onResourceReady(GlideDrawable resource,

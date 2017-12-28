@@ -41,11 +41,11 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
-import com.lipengfei.tv.presenter.CardPresenter;
 import com.lipengfei.tv.R;
 import com.lipengfei.tv.bean.Movie;
 import com.lipengfei.tv.global.Variables;
 import com.lipengfei.tv.manager.MovieManager;
+import com.lipengfei.tv.presenter.CardPresenter;
 import com.lipengfei.tv.presenter.DetailsDescriptionPresenter;
 import com.lipengfei.tv.ui.activity.DetailsActivity;
 import com.lipengfei.tv.ui.activity.MainActivity;
@@ -53,6 +53,8 @@ import com.lipengfei.tv.ui.activity.PlaybackOverlayActivity;
 import com.lipengfei.tv.utils.Utils;
 
 import java.util.List;
+
+import jp.wasabeef.glide.transformations.BlurTransformation;
 
 /*
  * LeanbackDetailsFragment extends DetailsFragment, a Wrapper fragment for leanback details screens.
@@ -129,6 +131,7 @@ public class VideoDetailsFragment extends DetailsFragment {
                 .load(uri)
                 .centerCrop()
                 .error(mDefaultBackground)
+                .bitmapTransform(new BlurTransformation(getActivity(),23,4))
                 .into(new SimpleTarget<GlideDrawable>(mMetrics.widthPixels, mMetrics.heightPixels) {
                     @Override
                     public void onResourceReady(GlideDrawable resource,
